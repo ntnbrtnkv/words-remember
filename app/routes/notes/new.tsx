@@ -3,7 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import * as React from "react";
 
-import { createNote } from "~/models/note.server";
+import { createDefinition } from "~/models/definition.server";
 import { requireUserId } from "~/session.server";
 
 type ActionData = {
@@ -34,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const note = await createNote({ title, body, userId });
+  const note = await createDefinition({ word: title, description: body, userId });
 
   return redirect(`/notes/${note.id}`);
 };

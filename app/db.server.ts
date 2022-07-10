@@ -20,4 +20,13 @@ if (process.env.NODE_ENV === "production") {
   prisma.$connect();
 }
 
+['SIGTERM', 'SIGINT'].forEach((signal) => {
+  process.on(signal, function onSigterm () {
+    console.info(`Got ${signal}. Graceful shutdown start`, new Date().toISOString())
+
+    prisma.$disconnect();
+  });
+})
+
+
 export { prisma };

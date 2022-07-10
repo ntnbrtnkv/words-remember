@@ -1,41 +1,40 @@
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  referentialIntegrity = "prisma"
 }
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
 }
 
 model User {
-  id    String @id @default(cuid())
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password Password?
-  notes    Note[]
+  password String
+
+  defenitions Definition[]
 }
 
-model Password {
-  hash String
+model Tag {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  name  String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  defenitions Definition[] @relation(fields: [defenitionIDs], references: [id])
+  defenitionIDs String[] @db.ObjectId
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
+model Definition {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  word         String
+  description  String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tags         Tag[] @relation(fields: [tagIDs], references: [id])
+  tagIDs       String[]   @db.ObjectId
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+  user         User @relation(fields: [userID], references: [id])
+  userID       String   @db.ObjectId
 }

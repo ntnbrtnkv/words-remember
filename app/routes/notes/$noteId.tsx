@@ -3,20 +3,19 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import type { Note } from "~/models/note.server";
-import { deleteNote } from "~/models/note.server";
-import { getNote } from "~/models/note.server";
+import type { Definition } from "~/models/definition.server";
+import { deleteDefinition } from "~/models/definition.server";
+import { getDefinition } from "~/models/definition.server";
 import { requireUserId } from "~/session.server";
 
 type LoaderData = {
-  note: Note;
+  note: Definition;
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.noteId, "noteId not found");
 
-  const note = await getNote({ userId, id: params.noteId });
+  const note = await getDefinition({ id: params.noteId });
   if (!note) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -27,7 +26,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const userId = await requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
-  await deleteNote({ userId, id: params.noteId });
+  await deleteDefinition({ userId, id: params.noteId });
 
   return redirect("/notes");
 };
@@ -37,8 +36,8 @@ export default function NoteDetailsPage() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.note.title}</h3>
-      <p className="py-6">{data.note.body}</p>
+      <h3 className="text-2xl font-bold">{data.note.word}</h3>
+      <p className="py-6">{data.note.description}</p>
       <hr className="my-4" />
       <Form method="post">
         <button

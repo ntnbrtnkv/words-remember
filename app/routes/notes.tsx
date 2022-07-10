@@ -4,15 +4,15 @@ import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
-import { getNoteListItems } from "~/models/note.server";
+import { getDefinitionsListItems } from "~/models/definition.server";
 
 type LoaderData = {
-  noteListItems: Awaited<ReturnType<typeof getNoteListItems>>;
+  noteListItems: Awaited<ReturnType<typeof getDefinitionsListItems>>;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
+  const noteListItems = await getDefinitionsListItems({ userId });
   return json<LoaderData>({ noteListItems });
 };
 
@@ -57,7 +57,7 @@ export default function NotesPage() {
                     }
                     to={note.id}
                   >
-                    📝 {note.title}
+                    📝 {note.word}
                   </NavLink>
                 </li>
               ))}
