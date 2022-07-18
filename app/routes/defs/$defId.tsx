@@ -9,35 +9,35 @@ import { getDefinition } from "~/models/definition.server";
 import { requireUserId } from "~/session.server";
 
 type LoaderData = {
-  note: Definition;
+  def: Definition;
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  invariant(params.noteId, "noteId not found");
+  invariant(params.defId, "defId not found");
 
-  const note = await getDefinition({ id: params.noteId });
-  if (!note) {
+  const def = await getDefinition({ id: params.defId });
+  if (!def) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json<LoaderData>({ note });
+  return json<LoaderData>({ def });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
   const userId = await requireUserId(request);
-  invariant(params.noteId, "noteId not found");
+  invariant(params.defId, "defId not found");
 
-  await deleteDefinition({ userId, id: params.noteId });
+  await deleteDefinition({ userId, id: params.defId });
 
-  return redirect("/notes");
+  return redirect("/defs");
 };
 
-export default function NoteDetailsPage() {
+export default function DefsDetailsPage() {
   const data = useLoaderData() as LoaderData;
 
   return (
     <div>
-      <h3 className="text-2xl font-bold">{data.note.word}</h3>
-      <p className="py-6">{data.note.description}</p>
+      <h3 className="text-2xl font-bold">{data.def.word}</h3>
+      <p className="py-6">{data.def.description}</p>
       <hr className="my-4" />
       <Form method="post">
         <button
@@ -61,7 +61,7 @@ export function CatchBoundary() {
   const caught = useCatch();
 
   if (caught.status === 404) {
-    return <div>Note not found</div>;
+    return <div>Definition not found</div>;
   }
 
   throw new Error(`Unexpected caught response with status: ${caught.status}`);
