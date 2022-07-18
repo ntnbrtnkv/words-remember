@@ -15,7 +15,7 @@ export function getDefinition({
 export function getDefinitionsListItems({ userId }: { userId: User["id"] }) {
   return prisma.definition.findMany({
     where: {
-      userID: userId
+      userId,
     },
     select: { id: true, word: true },
   });
@@ -32,7 +32,11 @@ export function createDefinition({
     data: {
       word,
       description,
-      userID: userId
+      user: {
+        connect: {
+          id: userId
+        }
+      }
     },
   });
 }

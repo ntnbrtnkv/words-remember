@@ -1,6 +1,7 @@
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 generator client {
@@ -8,7 +9,7 @@ generator client {
 }
 
 model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email String @unique
 
   createdAt DateTime @default(now())
@@ -20,21 +21,19 @@ model User {
 }
 
 model Tag {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name  String
 
-  defenitions Definition[] @relation(fields: [defenitionIDs], references: [id])
-  defenitionIDs String[] @db.ObjectId
+  defenitions Definition[]
 }
 
 model Definition {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   word         String
   description  String
 
-  tags         Tag[] @relation(fields: [tagIDs], references: [id])
-  tagIDs       String[]   @db.ObjectId
+  tags         Tag[]
 
-  user         User @relation(fields: [userID], references: [id])
-  userID       String   @db.ObjectId
+  user         User @relation(fields: [userId], references: [id])
+  userId       String @db.Uuid
 }
