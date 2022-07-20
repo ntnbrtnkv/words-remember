@@ -3,6 +3,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
+import { withSentry } from "@sentry/remix";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -11,6 +12,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -28,15 +30,25 @@ export const meta: MetaFunction = () => ({
 
 type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
+  env: {
+    SENTRY_DSN: string | undefined;
+    ENVIRONMENT: string | undefined;
+  }
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({
     user: await getUser(request),
+    env: {
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      ENVIRONMENT: process.env.NODE_ENV,
+    }
   });
 };
 
-export default function App() {
+function App() {
+  const { env } = useLoaderData() as LoaderData;
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -47,8 +59,11 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <script dangerouslySetInnerHTML={{__html: `window.ENV = ${JSON.stringify(env)}`}} />
         <LiveReload />
       </body>
     </html>
   );
 }
+
+export default withSentry(App);

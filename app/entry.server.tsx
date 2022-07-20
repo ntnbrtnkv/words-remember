@@ -1,6 +1,16 @@
 import type { EntryContext } from "@remix-run/node";
+import * as Sentry from '@sentry/remix';
 import { RemixServer } from "@remix-run/react";
 import { renderToString } from "react-dom/server";
+
+import { prisma } from "~/db.server";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 1,
+  integrations: [new Sentry.Integrations.Prisma({ client: prisma })],
+});
 
 export default function handleRequest(
   request: Request,
