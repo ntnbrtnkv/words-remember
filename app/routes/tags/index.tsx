@@ -60,7 +60,7 @@ export default function AllTagsPage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="grid h-full min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
+      <div className="grid min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
         <TagsMenu tags={tags} defs={defs} />
         <main className="col-span-5 m-16 flex flex-col items-center">
           <h1 className="mb-8 text-3xl font-bold uppercase">Create new tag</h1>
