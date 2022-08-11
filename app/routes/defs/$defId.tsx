@@ -1,11 +1,14 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import type { Definition } from "~/models/definition.server";
-import { deleteDefinition } from "~/models/definition.server";
-import { getDefinition } from "~/models/definition.server";
+import {
+  deleteDefinition,
+  getDefinition,
+  updateDefinition,
+} from "~/models/definition.server";
 import { requireUserId } from "~/session.server";
 
 type LoaderData = {
@@ -26,9 +29,25 @@ export const action: ActionFunction = async ({ request, params }) => {
   const userId = await requireUserId(request);
   invariant(params.defId, "defId not found");
 
-  await deleteDefinition({ userId, id: params.defId });
+  if (request.method === "DELETE") {
+    return await deleteDefinition({ userId, id: params.defId });
+  } else if (request.method === "PATCH") {
+    const form = await request.formData();
 
-  return redirect("/defs");
+    const word = form.get("word");
+    const description = form.get("description");
+
+    if (typeof word !== "string" || typeof description !== "string") {
+      return new Response("One of fields is not acceptable", { status: 400 });
+    }
+
+    return await updateDefinition({
+      userId,
+      id: params.defId,
+      word,
+      description,
+    });
+  }
 };
 
 export default function DefsDetailsPage() {
@@ -42,7 +61,7 @@ export default function DefsDetailsPage() {
       <Form method="post">
         <button
           type="submit"
-          className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="bg-blue-500 text-white  hover:bg-blue-600 focus:bg-blue-400 rounded py-2 px-4"
         >
           Delete
         </button>

@@ -17,7 +17,8 @@ model User {
 
   password String
 
-  defenitions Definition[]
+  tags Tag[]
+  definitions Definition[]
   Knowledge   Knowledge[]
 }
 
@@ -25,7 +26,12 @@ model Tag {
   id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name String
 
-  defenitions Definition[]
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String      @db.Uuid
+
+  definitions Definition[]
+
+  @@index([name, userId])
 }
 
 model Definition {
