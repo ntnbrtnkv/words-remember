@@ -4,13 +4,14 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 
 import { createTag, getAllTags } from "~/models/tag.server";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { getDefinitionsListItems } from "~/models/definition.server";
 import { requireUserId } from "~/session.server";
 import TagsMenu from "~/components/TagsMenu";
 import Input from "~/components/Input";
 import { Plus } from "~/icons/Plus";
 import Button from "~/components/Button";
+import { useEffect, useRef } from "react";
 
 type LoaderData = {
   tags: Tag[];
@@ -46,14 +47,24 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function AllTagsPage() {
   const { tags, defs } = useLoaderData() as LoaderData;
+  const transition = useTransition();
+  const isSubmitting = transition.state === "submitting";
+
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      formRef.current?.reset();
+    }
+  }, [isSubmitting]);
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="grid h-full min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
         <TagsMenu tags={tags} defs={defs} />
         <main className="col-span-5 m-16 flex flex-col items-center">
-          <h1 className="mb-8 text-3xl">Create new tag</h1>
-          <Form method="post">
+          <h1 className="mb-8 text-3xl font-bold uppercase">Create new tag</h1>
+          <Form method="post" ref={formRef}>
             <Input name="tag" autoFocus>
               <Button type="submit" appearance="primary">
                 <Plus />

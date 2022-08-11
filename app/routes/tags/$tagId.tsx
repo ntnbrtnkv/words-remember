@@ -10,7 +10,7 @@ import { getDefinitionsListItems } from "~/models/definition.server";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Input from "~/components/Input";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Button from "~/components/Button";
 import { Plus } from "~/icons/Plus";
 
@@ -61,6 +61,14 @@ export default function TagPage() {
   const [search, setSearch] = useState("");
   const [creatingNew, setCreatingNew] = useState(false);
   const navigate = useNavigate();
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!creatingNew) {
+      setSearch("");
+      searchRef.current?.focus();
+    }
+  }, [creatingNew]);
 
   const shownDefs = useMemo(() => {
     return currentDefs.filter((def) => def.word.toLowerCase().includes(search));
@@ -71,9 +79,13 @@ export default function TagPage() {
       <div className="grid h-full min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
         <TagsMenu tags={tags} defs={defs} />
         <main className="col-span-5 m-16 items-center space-y-6">
+          <h1 className="text-center text-3xl font-bold uppercase">
+            Search & Add
+          </h1>
           <div className="flex justify-center space-x-4">
             <Input
               name="search"
+              ref={searchRef}
               value={search}
               autoFocus
               onChange={(event) => setSearch(event.target.value)}
@@ -94,10 +106,7 @@ export default function TagPage() {
               isNew
               onSuccess={() => {
                 setCreatingNew(false);
-
-                setTimeout(() => {
-                  navigate(".", { replace: true });
-                }, 0);
+                navigate(".", { replace: true });
               }}
               onCancel={() => setCreatingNew(false)}
             />

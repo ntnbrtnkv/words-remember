@@ -1,17 +1,21 @@
-import type { InputHTMLAttributes, ReactElement } from "react";
-import React from "react";
+import type { InputHTMLAttributes, ReactElement, Ref } from "react";
+import React, { forwardRef } from "react";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   children?: ReactElement;
 };
 
-export default function Input({ children, type, className, ...rest }: Props) {
+function Input(
+  { children, type, className, ...rest }: Props,
+  ref: Ref<HTMLInputElement>
+) {
   const attached = !!children;
 
   return (
     <div className="flex items-stretch">
       <input
         {...rest}
+        ref={ref}
         className={`${
           attached ? "rounded-l border-r-0" : "rounded"
         } box-border grow border border-gray py-2 px-4 focus:shadow-input focus:outline-none ${className}`}
@@ -20,3 +24,5 @@ export default function Input({ children, type, className, ...rest }: Props) {
     </div>
   );
 }
+
+export default forwardRef(Input);
