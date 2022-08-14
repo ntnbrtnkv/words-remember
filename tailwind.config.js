@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     colors: {
       bgAccent: "white",
-      bgNeutral: "#F0F4F8",
+      bgNeutral: "#D9E2EC",
       textMain: "#102A43",
       textAccent: "#014D40",
       primary: "#65D6AD",
@@ -14,6 +14,9 @@ module.exports = {
       textPrimary: "#014D40",
       focus: "#EFFCF6",
       gray: "#BCCCDC",
+      error: "#E12D39",
+      disabled: "#BCCCDC",
+      disabledLight: "#F0F4F8",
     },
     extend: {
       gridTemplateColumns: {

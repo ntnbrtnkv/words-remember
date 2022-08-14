@@ -16,13 +16,19 @@ function Button(
       {...rest}
       className={`${attached ? "rounded-r" : "rounded"} ${
         appearance === "primary" &&
-        "bg-primary px-4 text-textPrimary hover:bg-primaryFocus focus:bg-primaryFocus"
+        `bg-primary px-4 text-textPrimary hover:bg-primaryFocus focus:bg-primaryFocus ${
+          rest.disabled && "bg-disabledLight"
+        }`
       } ${
         appearance === "secondary" &&
-        "px-2 text-secondary outline outline-2 outline-secondary focus:bg-secondaryFocus"
+        `px-2 text-secondary outline outline-2 ${
+          rest.disabled ? "outline-disabled" : "outline-secondary"
+        } focus:bg-secondaryFocus`
       } ${
         appearance === "outlined" &&
         "px-2 text-secondary focus:bg-secondaryFocus"
+      } ${
+        rest.disabled && "cursor-not-allowed text-disabled"
       } py-2 font-bold uppercase focus:outline-none ${className}`}
     >
       {children}

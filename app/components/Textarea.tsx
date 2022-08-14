@@ -1,15 +1,24 @@
-import type { ReactElement, TextareaHTMLAttributes } from "react";
-import React from "react";
+import type { ReactElement, Ref, TextareaHTMLAttributes } from "react";
+import React, { forwardRef } from "react";
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  error?: boolean;
   children?: ReactElement;
 };
 
-export default function Textarea({ children, className, ...rest }: Props) {
+function Textarea(
+  { children, className, error, ...rest }: Props,
+  ref: Ref<HTMLTextAreaElement>
+) {
   return (
     <textarea
       {...rest}
-      className={`  box-border rounded border border-gray py-2 px-4 focus:shadow-input focus:outline-none ${className}`}
+      ref={ref}
+      className={`box-border rounded border border-gray py-2 px-4 focus:shadow-input focus:outline-none ${
+        error ? "border-error focus:shadow-error" : ""
+      } ${className}`}
     />
   );
 }
+
+export default forwardRef(Textarea);

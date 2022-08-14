@@ -12,6 +12,7 @@ import Input from "~/components/Input";
 import { Plus } from "~/icons/Plus";
 import Button from "~/components/Button";
 import { useEffect, useRef } from "react";
+import { Loading } from "~/icons/Loading";
 
 type LoaderData = {
   tags: Tag[];
@@ -66,8 +67,12 @@ export default function AllTagsPage() {
           <h1 className="mb-8 text-3xl font-bold uppercase">Create new tag</h1>
           <Form method="post" ref={formRef}>
             <Input name="tag" autoFocus>
-              <Button type="submit" appearance="primary">
-                <Plus />
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                appearance="primary"
+              >
+                {isSubmitting ? <Loading /> : <Plus />}
               </Button>
             </Input>
           </Form>

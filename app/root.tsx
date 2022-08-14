@@ -3,8 +3,8 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
-import { withSentry } from "@sentry/remix";
 import { json } from "@remix-run/node";
+import { withSentry } from "@sentry/remix";
 import {
   Links,
   LiveReload,
@@ -24,7 +24,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Remix Definitions",
+  title: "Words remember",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -33,7 +33,7 @@ type LoaderData = {
   env: {
     SENTRY_DSN: string | undefined;
     ENVIRONMENT: string | undefined;
-  }
+  };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -42,7 +42,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     env: {
       SENTRY_DSN: process.env.SENTRY_DSN,
       ENVIRONMENT: process.env.NODE_ENV,
-    }
+    },
   });
 };
 
@@ -59,7 +59,11 @@ function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        <script dangerouslySetInnerHTML={{__html: `window.ENV = ${JSON.stringify(env)}`}} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(env)}`,
+          }}
+        />
         <LiveReload />
       </body>
     </html>
