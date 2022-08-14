@@ -62,8 +62,6 @@ export default function TestPage() {
   function handleChange(event: any) {
     event.preventDefault();
 
-    console.log(event);
-
     const selectedDef = defs.find(
       (def) => def.id === event.nativeEvent.submitter.value
     );
@@ -75,11 +73,11 @@ export default function TestPage() {
     const formData = new FormData();
 
     if (selectedDef.id === testingDef.id) {
-      console.log(selectedDef);
+      console.debug(selectedDef);
       setAnswer("right");
       formData.append("knowledgeChange", `${selectedDef.id}:1`);
     } else {
-      console.log({ selectedDef, testingDef });
+      console.debug({ selectedDef, testingDef });
       setAnswer("wrong");
       formData.append("knowledgeChange", `${selectedDef.id}:-1`);
       formData.append("knowledgeChange", `${testingDef.id}:-1`);
@@ -107,9 +105,9 @@ export default function TestPage() {
             type="submit"
             value={def.id}
             className={`
+              border-black
               border-2
               border-solid
-              border-black
             ${
               testingDef.id === def.id && answer !== null ? "bg-green-500" : ""
             } ${
