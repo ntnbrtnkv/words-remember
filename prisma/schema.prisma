@@ -32,6 +32,7 @@ model Tag {
   definitions Definition[]
 
   @@index([name, userId])
+  @@unique([name, userId])
 }
 
 model Definition {
@@ -46,6 +47,7 @@ model Definition {
   userId    String      @db.Uuid
 
   @@index([userId])
+  @@unique([word, userId])
 }
 
 model Knowledge {
