@@ -25,12 +25,21 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Words remember",
+  title: "Words Remember",
+  description: "Create dictionaries and test yourself",
   viewport: "width=device-width,initial-scale=1",
-  "og:title": "Words Remember - create dictionaries and test yourself",
+  "og:url": "https://wr.antb.fun",
+  "og:title": "Words Remember",
+  "og:description": "Create dictionaries and test yourself",
+  "og:image": `https://wr.antb.fun${Logo}`,
   "og:type": "website",
-  "og:image": Logo,
   "og:image:type": "image/png",
+  "twitter:card": "summary_large_image",
+  "twitter:domain": "wr.antb.fun",
+  "twitter:url": "https://wr.antb.fun",
+  "twitter:title": "Words Remember",
+  "twitter:description": "Create dictionaries and test yourself",
+  "twitter:image": `https://wr.antb.fun${Logo}`,
 });
 
 type LoaderData = {
