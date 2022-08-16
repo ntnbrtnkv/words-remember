@@ -17,7 +17,7 @@ import {
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
-import Logo from "~/icons/logo.webp";
+import Logo from "~/icons/og.png";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -30,7 +30,7 @@ export const meta: MetaFunction = () => ({
   "og:title": "Words Remember - create dictionaries and test yourself",
   "og:type": "website",
   "og:image": Logo,
-  "og:image:type": "image/webp",
+  "og:image:type": "image/png",
 });
 
 type LoaderData = {
