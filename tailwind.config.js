@@ -21,6 +21,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         "1-auto-1": "32px 1fr 32px",
+        "menu-content": "minmax(100px, max-content) auto",
       },
       boxShadow: {
         input: "0 0 0 .25em #8EEDC7",

@@ -1,10 +1,12 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { getTestDefinitions } from "~/models/definition.server";
 import { changeKnowledge } from "~/models/knowledge.server";
 import type { Definition } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import InsidePage from "~/components/InsidePage";
 
 type ActionData = {
   defs: Definition[];
@@ -42,6 +44,12 @@ export const action: ActionFunction = async ({ request }) => {
   );
 
   return null;
+};
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Test",
+  };
 };
 
 export default function TestPage() {
@@ -96,31 +104,35 @@ export default function TestPage() {
   };
 
   return (
-    <form method="post" onSubmit={handleChange}>
-      <div>{testingDef.word}</div>
-      <div className="flex space-x-4">
-        {defs.map((def) => (
-          <button
-            key={def.id}
-            type="submit"
-            value={def.id}
-            className={`
-              border-black
+    <InsidePage>
+      <form method="post" onSubmit={handleChange}>
+        <div>{testingDef.word}</div>
+        <div className="flex space-x-4">
+          {defs.map((def) => (
+            <button
+              key={def.id}
+              type="submit"
+              value={def.id}
+              className={`
               border-2
               border-solid
+              border-black
             ${
               testingDef.id === def.id && answer !== null ? "bg-green-500" : ""
             } ${
-              selected?.id === def.id && answer === "wrong" ? "bg-red-500" : ""
-            }`}
-          >
-            {def.description}
-          </button>
-        ))}
-      </div>
-      <button type="button" onClick={nextTest}>
-        next
-      </button>
-    </form>
+                selected?.id === def.id && answer === "wrong"
+                  ? "bg-red-500"
+                  : ""
+              }`}
+            >
+              {def.description}
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={nextTest}>
+          next
+        </button>
+      </form>
+    </InsidePage>
   );
 }

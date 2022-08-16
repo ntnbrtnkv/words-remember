@@ -1,4 +1,8 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import type { Definition, Tag } from "@prisma/client";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
@@ -13,6 +17,7 @@ import { Plus } from "~/icons/Plus";
 import Button from "~/components/Button";
 import { useEffect, useRef } from "react";
 import { Loading } from "~/icons/Loading";
+import InsidePage from "~/components/InsidePage";
 
 type LoaderData = {
   tags: Tag[];
@@ -46,6 +51,12 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 
+export const meta: MetaFunction = () => {
+  return {
+    title: "Tags",
+  };
+};
+
 export default function AllTagsPage() {
   const { tags, defs } = useLoaderData() as LoaderData;
   const transition = useTransition();
@@ -60,24 +71,28 @@ export default function AllTagsPage() {
   }, [isSubmitting]);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="grid min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
-        <TagsMenu tags={tags} defs={defs} />
-        <main className="col-span-5 m-16 flex flex-col items-center">
-          <h1 className="mb-8 text-3xl font-bold uppercase">Create new tag</h1>
-          <Form method="post" ref={formRef}>
-            <Input name="tag" autoFocus>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                appearance="primary"
-              >
-                {isSubmitting ? <Loading /> : <Plus />}
-              </Button>
-            </Input>
-          </Form>
-        </main>
-      </div>
-    </DndProvider>
+    <InsidePage>
+      <DndProvider backend={HTML5Backend}>
+        <div className="grid min-h-full grow grid-flow-col grid-cols-menu-content">
+          <TagsMenu tags={tags} defs={defs} />
+          <main className="col-span-5 m-16 flex flex-col items-center">
+            <h1 className="mb-8 text-3xl font-bold uppercase">
+              Create new tag
+            </h1>
+            <Form method="post" ref={formRef}>
+              <Input name="tag" autoFocus>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  appearance="primary"
+                >
+                  {isSubmitting ? <Loading /> : <Plus />}
+                </Button>
+              </Input>
+            </Form>
+          </main>
+        </div>
+      </DndProvider>
+    </InsidePage>
   );
 }

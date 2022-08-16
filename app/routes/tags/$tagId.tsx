@@ -1,4 +1,8 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import type { Definition, Tag } from "@prisma/client";
 
 import { createTag, getAllTags } from "~/models/tag.server";
@@ -13,6 +17,7 @@ import Input from "~/components/Input";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Button from "~/components/Button";
 import { Plus } from "~/icons/Plus";
+import InsidePage from "~/components/InsidePage";
 
 type LoaderData = {
   tags: Tag[];
@@ -56,6 +61,12 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 
+export const meta: MetaFunction = ({ data }: { data?: LoaderData }) => {
+  return {
+    title: `"${data?.currentTag?.name}" tag`,
+  };
+};
+
 export default function TagPage() {
   const { tags, defs, currentDefs, currentTag } = useLoaderData() as LoaderData;
   const [search, setSearch] = useState("");
@@ -75,47 +86,52 @@ export default function TagPage() {
   }, [currentDefs, search]);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="grid min-h-screen grid-flow-col grid-cols-6 bg-bgNeutral text-textMain">
-        <TagsMenu tags={tags} defs={defs} />
-        <main className="col-span-5 m-16 items-center space-y-6">
-          <h1 className="text-center text-3xl font-bold uppercase">
-            Search & Add
-          </h1>
-          <div className="flex justify-center space-x-4">
-            <Input
-              name="search"
-              ref={searchRef}
-              value={search}
-              autoFocus
-              onChange={(event) => setSearch(event.target.value)}
-            />
-            <Button appearance={"primary"} onClick={() => setCreatingNew(true)}>
-              <Plus />
-            </Button>
-          </div>
-          {creatingNew && (
-            <DefinitionComponent
-              def={{
-                id: "",
-                word: search,
-                description: "",
-                userId: "",
-              }}
-              tag={currentTag}
-              isNew
-              onSuccess={() => {
-                setCreatingNew(false);
-                navigate(".", { replace: true });
-              }}
-              onCancel={() => setCreatingNew(false)}
-            />
-          )}
-          {shownDefs.map((def) => (
-            <DefinitionComponent key={def.id} tag={currentTag} def={def} />
-          ))}
-        </main>
-      </div>
-    </DndProvider>
+    <InsidePage>
+      <DndProvider backend={HTML5Backend}>
+        <div className="grid min-h-full grow grid-flow-col grid-cols-menu-content">
+          <TagsMenu tags={tags} defs={defs} />
+          <main className="m-16 items-center space-y-6">
+            <h1 className="text-center text-3xl font-bold uppercase">
+              Search & Add
+            </h1>
+            <div className="flex justify-center space-x-4">
+              <Input
+                name="search"
+                ref={searchRef}
+                value={search}
+                autoFocus
+                onChange={(event) => setSearch(event.target.value)}
+              />
+              <Button
+                appearance={"primary"}
+                onClick={() => setCreatingNew(true)}
+              >
+                <Plus />
+              </Button>
+            </div>
+            {creatingNew && (
+              <DefinitionComponent
+                def={{
+                  id: "",
+                  word: search,
+                  description: "",
+                  userId: "",
+                }}
+                tag={currentTag}
+                isNew
+                onSuccess={() => {
+                  setCreatingNew(false);
+                  navigate(".", { replace: true });
+                }}
+                onCancel={() => setCreatingNew(false)}
+              />
+            )}
+            {shownDefs.map((def) => (
+              <DefinitionComponent key={def.id} tag={currentTag} def={def} />
+            ))}
+          </main>
+        </div>
+      </DndProvider>
+    </InsidePage>
   );
 }

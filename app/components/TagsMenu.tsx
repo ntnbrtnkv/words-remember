@@ -1,9 +1,10 @@
 import type { Definition, Tag } from "@prisma/client";
-import { Link, useFetcher, useLocation } from "@remix-run/react";
+import { useFetcher, useLocation } from "@remix-run/react";
 import type { RefAttributes } from "react";
 import React, { useMemo } from "react";
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
 import { useDrop } from "react-dnd";
+import Link from "~/components/Link";
 
 type Props = {
   tags: Tag[];
@@ -13,17 +14,17 @@ type Props = {
 const TagLink = ({
   children,
   className,
-  active,
   tag,
   accept = "",
   ...rest
 }: RemixLinkProps &
   RefAttributes<HTMLAnchorElement> & {
-    active: boolean;
     accept?: string;
     tag?: Tag;
   }) => {
   const fetcher = useFetcher();
+  const { pathname } = useLocation();
+  const active = useMemo(() => pathname === rest.to, [pathname, rest.to]);
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: accept + (active ? "_not" : ""),
@@ -48,14 +49,10 @@ const TagLink = ({
   return (
     <Link
       ref={drop}
-      className={`mx-2 block rounded p-2 focus:outline-none ${
-        active ? "cursor-default font-bold" : "hover:bg-focus focus:bg-focus"
-      } ${isOver ? "bg-primaryFocus" : ""} ${
+      className={`block ${isOver ? "bg-primaryFocus" : ""} ${
         canDrop ? "outline-dashed outline-2 outline-textMain" : ""
       } ${className}`}
       {...rest}
-      tabIndex={active ? -1 : undefined}
-      aria-disabled={active}
     >
       {children}
     </Link>
@@ -63,19 +60,14 @@ const TagLink = ({
 };
 
 export default function TagsMenu({ tags, defs }: Props) {
-  const { pathname } = useLocation();
-
   const freeDefs = useMemo(() => {
     return defs.filter((def) => def.tags.length === 0);
   }, [defs]);
 
   return (
-    <menu className="bg-bgAccent text-textMain shadow-sm">
-      <TagLink className="m-4 text-xl" to="/tags" active={pathname === "/tags"}>
-        Tags
-      </TagLink>
+    <menu className="bg-bgAccent p-2 text-textMain shadow-sm">
       {freeDefs.length !== 0 && (
-        <TagLink to={"/tags/free"} active={pathname === "/tags/free"}>
+        <TagLink to={"/tags/free"}>
           Free definitions ({freeDefs.length})
         </TagLink>
       )}
@@ -85,7 +77,6 @@ export default function TagsMenu({ tags, defs }: Props) {
           tag={tag}
           accept="definition"
           to={`/tags/${tag.id}`}
-          active={`/tags/${tag.id}` === pathname}
         >
           {tag.name} ({tag.definitions.length})
         </TagLink>
