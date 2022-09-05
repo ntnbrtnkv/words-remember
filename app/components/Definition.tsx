@@ -99,6 +99,8 @@ export default function DefinitionComponent({
     }
   };
 
+  const autoFocusDescription = isNew && !!def.word;
+
   return (
     <div
       ref={dragPreview}
@@ -129,7 +131,7 @@ export default function DefinitionComponent({
               {...register("word", { disabled: isPerformingAction })}
               defaultValue={def.word}
               placeholder="Word"
-              autoFocus
+              autoFocus={!autoFocusDescription}
             />
             <Textarea
               {...register("description", {
@@ -138,6 +140,7 @@ export default function DefinitionComponent({
               })}
               placeholder="Definition"
               defaultValue={def.description}
+              autoFocus={autoFocusDescription}
             />
           </div>
           <section className="flex h-full flex-col place-content-between space-y-4">
