@@ -1,4 +1,4 @@
-import type { Definition, Tag } from "@prisma/client";
+import type { Definition, Knowledge, Tag } from "@prisma/client";
 import React, { useEffect, useState } from "react";
 import { useDrag } from "react-dnd";
 import { BurgerMenu } from "~/icons/BurgerMenu";
@@ -16,6 +16,7 @@ import { Save } from "~/icons/Save";
 type Props = {
   def: Definition;
   tag: Tag;
+  knowledge?: Knowledge;
   isNew?: boolean;
   onCancel?: () => void;
   onSuccess?: () => void;
@@ -29,6 +30,7 @@ type FormValues = {
 export default function DefinitionComponent({
   def,
   tag,
+  knowledge,
   isNew = false,
   onCancel,
   onSuccess,
@@ -171,9 +173,16 @@ export default function DefinitionComponent({
           <span ref={drag} className="p-2">
             <BurgerMenu className="cursor-grab" />
           </span>
-          <div className="truncate">
-            <h2 className="font-bold">{def.word}</h2>
-            <div>{def.description}</div>
+          <div className="flex truncate">
+            <div className="truncate">
+              <h2 className="font-bold">{def.word}</h2>
+              <div>{def.description}</div>
+            </div>
+            {knowledge && (
+              <div className="flex grow items-center justify-end">
+                {knowledge.right}/{knowledge.right + knowledge.wrong}
+              </div>
+            )}
           </div>
           <Button
             appearance="secondary"

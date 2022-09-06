@@ -7,6 +7,8 @@ module.exports = {
         bgAccent: "white",
         bgNeutral: "#D9E2EC",
         textMain: "#102A43",
+        textMainNotActive: "rgba(16,42,67,0.8)",
+        textMainDisabled: "rgba(16,42,67,0.6)",
         textAccent: "#014D40",
         primary: "#65D6AD",
         primaryFocus: "#8EEDC7",

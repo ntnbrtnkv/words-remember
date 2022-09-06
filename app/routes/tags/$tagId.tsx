@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const currentDefs =
     tagId === "free"
       ? defs.filter((def) => def.tags.length === 0)
-      : currentTag?.definitions;
+      : defs.filter((def) => def.tags.some((tag) => tag.id === currentTag?.id));
 
   return { tags, currentTag, defs, currentDefs };
 };
@@ -127,7 +127,12 @@ export default function TagPage() {
               />
             )}
             {shownDefs.map((def) => (
-              <DefinitionComponent key={def.id} tag={currentTag} def={def} />
+              <DefinitionComponent
+                key={def.id}
+                tag={currentTag}
+                def={def}
+                knowledge={(def as any).Knowledge[0]}
+              />
             ))}
           </main>
         </div>

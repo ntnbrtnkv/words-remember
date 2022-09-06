@@ -18,6 +18,7 @@ export function getDefinitionsListItems({ userId }: { userId: User["id"] }) {
     },
     include: {
       tags: true,
+      Knowledge: true,
     },
   });
 }

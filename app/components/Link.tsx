@@ -16,10 +16,10 @@ const Link: ForwardRefRenderFunction<HTMLAnchorElement, Props> = (
   return (
     <RemixLink
       ref={ref}
-      className={`rounded p-2 font-bold opacity-80 focus:outline-none ${
+      className={`rounded p-2 font-bold text-textMainNotActive focus:outline-none ${
         active
-          ? "cursor-default opacity-60"
-          : "focus:outline-bold hover:opacity-100 focus:opacity-100 focus:outline focus:outline-2 focus:outline-textMain"
+          ? "cursor-default text-textMainDisabled"
+          : "focus:outline-bold hover:text-textMain focus:text-textMain focus:outline focus:outline-2 focus:outline-textMain"
       } ${className}`}
       tabIndex={active ? -1 : undefined}
       aria-disabled={active}

@@ -1,12 +1,16 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import type { MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { requireUserId } from "~/session.server";
 import { getTestDefinitions } from "~/models/definition.server";
 import { changeKnowledge } from "~/models/knowledge.server";
 import type { Definition } from "@prisma/client";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InsidePage from "~/components/InsidePage";
+import Button from "~/components/Button";
 
 type ActionData = {
   defs: Definition[];
@@ -54,8 +58,37 @@ export const meta: MetaFunction = () => {
 
 export default function TestPage() {
   const fetcher = useFetcher<ActionData>();
+  const refs = useRef<Array<HTMLButtonElement | null>>([]);
   const [selected, setSelected] = useState<Definition | null>(null);
   const [answer, setAnswer] = useState<"right" | "wrong" | null>(null);
+
+  function submitAnswer(selected: Definition | null) {
+    if (!selected) return;
+
+    const formData = new FormData();
+
+    if (selected.id === testingDef.id) {
+      console.debug(selected);
+      setAnswer("right");
+      formData.append("knowledgeChange", `${selected.id}:1`);
+    } else {
+      console.debug({ selected, testingDef });
+      setAnswer("wrong");
+      formData.append("knowledgeChange", `${selected.id}:-1`);
+      formData.append("knowledgeChange", `${testingDef.id}:-1`);
+    }
+
+    fetch("/test", {
+      method: "post",
+      body: formData,
+    });
+  }
+
+  function nextTest() {
+    setSelected(null);
+    setAnswer(null);
+    fetcher.load("/test");
+  }
 
   useEffect(() => {
     if (fetcher.type === "init") {
@@ -63,11 +96,19 @@ export default function TestPage() {
     }
   }, []);
 
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeys);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeys);
+    };
+  }, [selected, fetcher.data]);
+
   if (!fetcher.data) return null;
 
   const { defs, testingDef } = fetcher.data;
 
-  function handleChange(event: any) {
+  const handleChange = (event: any) => {
     event.preventDefault();
 
     const selectedDef = defs.find(
@@ -78,45 +119,39 @@ export default function TestPage() {
 
     setSelected(selectedDef);
 
-    const formData = new FormData();
+    submitAnswer(selectedDef);
+  };
 
-    if (selectedDef.id === testingDef.id) {
-      console.debug(selectedDef);
-      setAnswer("right");
-      formData.append("knowledgeChange", `${selectedDef.id}:1`);
-    } else {
-      console.debug({ selectedDef, testingDef });
-      setAnswer("wrong");
-      formData.append("knowledgeChange", `${selectedDef.id}:-1`);
-      formData.append("knowledgeChange", `${testingDef.id}:-1`);
+  function handleKeys(event: KeyboardEvent) {
+    if (event.key === " " && selected !== null) {
+      nextTest();
+      return;
     }
 
-    fetch("/test", {
-      method: "post",
-      body: formData,
-    });
-  }
+    if (event.key < "1" || event.key > "3") return;
 
-  const nextTest = () => {
-    setSelected(null);
-    setAnswer(null);
-    fetcher.load("/test");
-  };
+    refs.current[event.key as any]?.click();
+  }
 
   return (
     <InsidePage>
-      <form method="post" onSubmit={handleChange}>
-        <div>{testingDef.word}</div>
-        <div className="flex space-x-4">
-          {defs.map((def) => (
+      <form
+        method="post"
+        className="flex grow flex-col justify-center p-16"
+        onSubmit={handleChange}
+      >
+        <h1 className="mb-16 text-center text-3xl font-bold uppercase">
+          {testingDef.word}
+        </h1>
+        <div className="mb-16 flex flex-col space-y-8 md:flex-row md:justify-center md:space-x-8 md:space-y-0 ">
+          {defs.map((def, index) => (
             <button
               key={def.id}
               type="submit"
               value={def.id}
+              ref={(el) => (refs.current[index + 1] = el)}
               className={`
-              border-2
-              border-solid
-              border-black
+              full-w focus:outline-bold inline-block justify-between rounded bg-bgAccent p-4 text-textMainNotActive text-textMain shadow-sm hover:text-textMain focus:text-textMain focus:outline-none focus:outline focus:outline-2 focus:outline-textMain
             ${
               testingDef.id === def.id && answer !== null ? "bg-green-500" : ""
             } ${
@@ -125,13 +160,19 @@ export default function TestPage() {
                   : ""
               }`}
             >
+              <span>{index + 1}. </span>
               {def.description}
             </button>
           ))}
         </div>
-        <button type="button" onClick={nextTest}>
-          next
-        </button>
+        <Button
+          appearance="primary"
+          className="sticky bottom-4 self-end"
+          type="button"
+          onClick={nextTest}
+        >
+          Next
+        </Button>
       </form>
     </InsidePage>
   );
