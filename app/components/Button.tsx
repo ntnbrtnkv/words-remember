@@ -17,7 +17,8 @@ function Button(
       className={`${attached ? "rounded-r" : "rounded"} ${
         appearance === "primary" &&
         `bg-primary px-4 text-textPrimary hover:bg-primaryFocus focus:bg-primaryFocus ${
-          rest.disabled && "bg-disabledLight"
+          rest.disabled &&
+          "bg-disabledLight hover:bg-disabledLight focus:bg-disabledLight"
         }`
       } ${
         appearance === "secondary" &&
@@ -29,7 +30,7 @@ function Button(
         "px-2 text-secondary focus:bg-secondaryFocus"
       } ${
         rest.disabled && "cursor-not-allowed text-disabled"
-      } py-2 font-bold uppercase focus:outline-none ${className}`}
+      } flex items-center justify-center py-2 font-bold uppercase focus:outline-none ${className}`}
     >
       {children}
     </button>

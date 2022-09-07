@@ -11,6 +11,7 @@ import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import InsidePage from "~/components/InsidePage";
 import Button from "~/components/Button";
+import { Loading } from "~/icons/Loading";
 
 type ActionData = {
   defs: Definition[];
@@ -62,6 +63,8 @@ export default function TestPage() {
   const [selected, setSelected] = useState<Definition | null>(null);
   const [answer, setAnswer] = useState<"right" | "wrong" | null>(null);
 
+  const isLoading = ["submitting", "loading"].includes(fetcher.state);
+
   function submitAnswer(selected: Definition | null) {
     if (!selected) return;
 
@@ -85,6 +88,8 @@ export default function TestPage() {
   }
 
   function nextTest() {
+    if (isLoading) return;
+
     setSelected(null);
     setAnswer(null);
     fetcher.load("/test");
@@ -111,6 +116,8 @@ export default function TestPage() {
   const handleChange = (event: any) => {
     event.preventDefault();
 
+    if (isLoading) return;
+
     const selectedDef = defs.find(
       (def) => def.id === event.nativeEvent.submitter.value
     );
@@ -123,6 +130,8 @@ export default function TestPage() {
   };
 
   function handleKeys(event: KeyboardEvent) {
+    if (isLoading) return;
+
     if (event.key === " " && selected !== null) {
       nextTest();
       return;
@@ -149,14 +158,20 @@ export default function TestPage() {
               key={def.id}
               type="submit"
               value={def.id}
+              disabled={Boolean(selected) || isLoading}
               ref={(el) => (refs.current[index + 1] = el)}
               className={`
-              full-w focus:outline-bold inline-block justify-between rounded bg-bgAccent p-4 text-textMainNotActive text-textMain shadow-sm hover:text-textMain focus:text-textMain focus:outline-none focus:outline focus:outline-2 focus:outline-textMain
+              full-w focus:outline-bold inline-block justify-between rounded bg-bgAccent p-4 text-textMainNotActive shadow-sm hover:text-textMain focus:text-textMain focus:outline-none focus:outline focus:outline-2 focus:outline-textMain
             ${
               testingDef.id === def.id && answer !== null ? "bg-green-500" : ""
             } ${
                 selected?.id === def.id && answer === "wrong"
                   ? "bg-red-500"
+                  : ""
+              } 
+              ${
+                isLoading || selected
+                  ? "cursor-not-allowed hover:text-textMainNotActive"
                   : ""
               }`}
             >
@@ -167,11 +182,12 @@ export default function TestPage() {
         </div>
         <Button
           appearance="primary"
-          className="sticky bottom-4 self-end"
+          className="sticky bottom-4 min-w-[74px] self-end align-middle"
+          disabled={isLoading}
           type="button"
           onClick={nextTest}
         >
-          Next
+          {isLoading ? <Loading height={24} /> : "Next"}
         </Button>
       </form>
     </InsidePage>
